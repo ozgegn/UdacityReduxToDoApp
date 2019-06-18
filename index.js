@@ -7,68 +7,131 @@ function createStore(reducer) {
   // 3. Listen to changes on the state.
   // 4. Update the state
 
-  let state; //1
-  let listeners = [];
+  let state  //1
+  let listeners = [] 
 
-  const getState = () => state; //2
+  const getState = () => state  //2
 
   //3
   const subscribe = listener => {
-    listeners.push(listener);
+    listeners.push(listener) 
     return () => {
-      listeners = listeners.filter(l => l !== listener);
-    };
-  };
+      listeners = listeners.filter(l => l !== listener) 
+    } 
+  } 
 
   //4
   const dispatch = action => {
-    state = reducer(state, action);
-    listeners.forEach(listener => listener());
-  };
+    state = reducer(state, action) 
+    listeners.forEach(listener => listener()) 
+  } 
 
-  return { getState, subscribe, dispatch };
+  return { getState, subscribe, dispatch } 
 }
 
 //App Code
 function todos(state = [], action) {
   switch (action.type) {
-    case "ADD_TODO":
-      return state.concat([action.todo]);
-    case "REMOVE_TODO":
-      return state.filter(todo => todo.id !== action.id);
-    case "TOGGLE_TODO":
+    case 'ADD_TODO':
+      return state.concat([action.todo]) 
+    case 'REMOVE_TODO':
+      return state.filter(todo => todo.id !== action.id) 
+    case 'TOGGLE_TODO':
       return state.map(todo =>
         todo.id !== action.id
           ? todo
           : Object.assign({}, todo, { complete: !todo.complete })
-      );
+      ) 
     default:
-      return state;
+      return state 
   }
 }
 
 function goals(state = [], action) {
   switch (action.type) {
-    case "ADD_GOAL":
-      return state.concat([action.goal])
-    case "REMOVE_GOAL":
-      return state.filter(goal => goal.id !== action.id)
+    case 'ADD_GOAL':
+      return state.concat([action.goal]) 
+    case 'REMOVE_GOAL':
+      return state.filter(goal => goal.id !== action.id) 
     default:
-      return state
+      return state 
   }
 }
 
-const store = createStore(todos);
+/**
+ * 
+ * @param {*} state 
+ * @param {*} action
+ * Base reducer for todos, goals 
+ */
+function app(state = {}, action) {
+  return {
+    todos: todos(state.todos, action),
+    goals: goals(state.goals, action)
+  } 
+}
+
+
+const store = createStore(app) 
 
 store.subscribe(() => {
-  console.log("The new state is: ", store.getState());
-});
+  console.log('The new state is: ', store.getState()) 
+}) 
 
 store.dispatch({
-  type: "ADD_TODO",
+  type: 'ADD_TODO',
   todo: {
     id: 0,
-    name: "Learn Redux",
-    complete: false
+    name: 'Walk the dog',
+    complete: false,
   }
-});
+})
+
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 1,
+    name: 'Wash the car',
+    complete: false,
+  }
+})
+
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 2,
+    name: 'Go to the gym',
+    complete: true,
+  }
+})
+
+store.dispatch({
+  type: 'REMOVE_TODO',
+  id: 1
+})
+
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0
+})
+
+store.dispatch({
+  type: 'ADD_GOAL',
+  goal: {
+    id: 0,
+    name: 'Learn Redux'
+  }
+})
+
+store.dispatch({
+  type: 'ADD_GOAL',
+  goal: {
+    id: 1,
+    name: 'Lose 20 pounds'
+  }
+})
+
+store.dispatch({
+  type: 'REMOVE_GOAL',
+  id: 0
+})
