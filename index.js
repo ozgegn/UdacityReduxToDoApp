@@ -31,9 +31,30 @@ function createStore(reducer) {
 
 //App Code
 
-const ADD_TODO = 'ADD_TODO'
-const REMOVE_TODO =  'REMOVE_TODO'
-const TOGGLE_TODO = 'TOGGLE_TODO'
+const ADD_TODO =  'ADD_TODO ' 
+const REMOVE_TODO =  'REMOVE_TODO ' 
+const TOGGLE_TODO =  'TOGGLE_TODO ' 
+
+function addToDoAction(todo) {
+  return {
+    type: ADD_TODO,
+    todo
+  } 
+}
+
+function removetoDoAction(id) {
+  return {
+    type: REMOVE_TODO,
+    id
+  } 
+}
+
+function toggleToDoAction(id) {
+  return {
+    type: TOGGLE_TODO,
+    id
+  } 
+}
 
 function todos(state = [], action) {
   switch (action.type) {
@@ -52,8 +73,22 @@ function todos(state = [], action) {
   }
 }
 
-const ADD_GOAL = 'ADD_GOAL'
-const REMOVE_GOAL = 'REMOVE_GOAL'
+const ADD_GOAL =  'ADD_GOAL ' 
+const REMOVE_GOAL =  'REMOVE_GOAL ' 
+
+function addGoalAction(goal) {
+  return {
+    type: ADD_GOAL,
+    goal
+  } 
+}
+
+function removeGoalAction(id) {
+  return {
+    type: REMOVE_GOAL,
+    id
+  } 
+}
 
 function goals(state = [], action) {
   switch (action.type) {
@@ -67,10 +102,10 @@ function goals(state = [], action) {
 }
 
 /**
- * 
- * @param {*} state 
+ *
+ * @param {*} state
  * @param {*} action
- * Base reducer for todos, goals 
+ * Base reducer for todos, goals
  */
 function app(state = {}, action) {
   return {
@@ -79,67 +114,52 @@ function app(state = {}, action) {
   } 
 }
 
-
 const store = createStore(app) 
 
 store.subscribe(() => {
-  console.log('The new state is: ', store.getState()) 
+  console.log( 'The new state is:  ', store.getState()) 
 }) 
 
-store.dispatch({
-  type: ADD_TODO,
-  todo: {
+store.dispatch(
+  addToDoAction({
     id: 0,
-    name: 'Walk the dog',
-    complete: false,
-  }
-})
+    name:  'Walk the dog ',
+    complete: false
+  })
+) 
 
-store.dispatch({
-  type: ADD_TODO,
-  todo: {
+store.dispatch(
+  addToDoAction({
     id: 1,
-    name: 'Wash the car',
-    complete: false,
-  }
-})
+    name:  'Wash the car ',
+    complete: false
+  })
+) 
 
-store.dispatch({
-  type: ADD_TODO,
-  todo: {
+store.dispatch(
+  addToDoAction({
     id: 2,
-    name: 'Go to the gym',
-    complete: true,
-  }
-})
+    name:  'Go to the gym ',
+    complete: true
+  })
+) 
 
-store.dispatch({
-  type:  REMOVE_TODO,
-  id: 1
-})
+store.dispatch(removetoDoAction(1)) 
 
-store.dispatch({
-  type: TOGGLE_TODO,
-  id: 0
-})
+store.dispatch(toggleToDoAction(0)) 
 
-store.dispatch({
-  type: ADD_GOAL,
-  goal: {
+store.dispatch(
+  addGoalAction({
     id: 0,
-    name: 'Learn Redux'
-  }
-})
+    name:  'Learn Redux '
+  })
+) 
 
-store.dispatch({
-  type: ADD_GOAL,
-  goal: {
+store.dispatch(
+  addGoalAction({
     id: 1,
-    name: 'Lose 20 pounds'
-  }
-})
+    name:  'Lose 20 pounds '
+  })
+) 
 
-store.dispatch({
-  type: REMOVE_GOAL,
-  id: 0
-})
+store.dispatch(removeGoalAction(0)) 
