@@ -147,7 +147,7 @@
         Redux.combineReducers({
           todos,
           goals,
-          loading,
+          loading
         }),
         Redux.applyMiddleware(checker, logger)
       );
@@ -191,10 +191,18 @@
 
         removeItem = todo => {
           this.props.store.dispatch(removeTodoAction(todo.id));
+          return API.deleteTodo(todo.id).catch(() => {
+            this.props.store.dispatch(addToDoAction(todo));
+            alert("An error occured.Try again");
+          });
         };
 
         toggleItem = id => {
           this.props.store.dispatch(toggleToDoAction(id));
+          return API.saveTodoToggle(id).catch(() => {
+            this.props.store.dispatch(toggleToDoAction(id));
+            alert("An error occured. Try again")
+          });
         };
 
         render() {
@@ -233,6 +241,10 @@
 
         removeItem = goal => {
           this.props.store.dispatch(removeGoalAction(goal.id));
+          return API.deleteGoal(goal.id).catch(() => {
+            this.props.store.dispatch(addGoalAction(goal));
+            alert("An error occured. Try again.");
+          });
         };
 
         render() {
@@ -254,21 +266,19 @@
       class App extends React.Component {
         componentDidMount() {
           const { store } = this.props;
-
           Promise.all([API.fetchTodos(), API.fetchGoals()]).then(
             ([todos, goals]) => {
               store.dispatch(receiveDataAction(todos, goals));
             }
           );
-
           store.subscribe(() => this.forceUpdate());
         }
         render() {
           const { store } = this.props;
           const { todos, goals, loading } = store.getState();
 
-          if(loading){
-            return <h3>Loading</h3>
+          if (loading) {
+            return <h3>Loading</h3>;
           }
 
           return (
