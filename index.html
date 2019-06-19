@@ -21,6 +21,10 @@
       <ul id="goals"></ul>
     </div>
 
+    <hr />
+
+    <div id="app"></div>
+
     <script type="text/javascript">
       function generateId() {
         return (
@@ -213,6 +217,73 @@
 
         document.getElementById("goals").append(node);
       }
+    </script>
+
+    <script type="text/babel">
+      function List(props) {
+        return (
+          <ul>
+            <li>LIST</li>
+          </ul>
+        );
+      }
+
+      class ToDos extends React.Component {
+        addItem = e => {
+          e.preventDefault();
+          const name = this.input.value;
+          this.input = "";
+
+          this.props.store.dispatch(
+            addToDoAction({
+              name,
+              complete: false,
+              id: generateId()
+            })
+          );
+        };
+
+        render() {
+          return (
+            <div>
+              <h1>ToDo List</h1>
+              <input
+                type="text"
+                placeholder="Add ToDo"
+                ref={input => (this.input = input)}
+              />
+
+              <button onClick={this.addItem}>Add ToDo</button>
+
+              <List />
+            </div>
+          );
+        }
+      }
+
+      class Goals extends React.Component {
+        render() {
+          return (
+            <div>
+              GOALS
+              <List />
+            </div>
+          );
+        }
+      }
+
+      class App extends React.Component {
+        render() {
+          return (
+            <div>
+              <ToDos store={this.props.store} />
+              <Goals />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App store={store} />, document.getElementById("app"));
     </script>
   </body>
 </html>
