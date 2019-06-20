@@ -75,6 +75,39 @@
         }
       }
 
+      function handleInitialData(){
+        return dispatch => {
+           return Promise.all([API.fetchTodos(), API.fetchGoals()]).then(
+            ([todos, goals]) => {
+              store.dispatch(receiveDataAction(todos, goals));
+            }
+          );
+        }
+      }
+
+      function handleSaveToDo(name, cb) {
+        return dispatch => {
+          return API.saveTodo(name)
+            .then(todo => {
+              dispatch(addToDoAction(todo));
+              cb();
+            })
+            .catch(() => {
+              alert("There was an error. Try again.");
+            });
+        };
+      }
+
+      function handleToggleToDoItem(id){
+        return dispatch => {
+          dispatch(toggleToDoAction(id));
+          return API.saveTodoToggle(id).catch(() => {
+            dispatch(toggleToDoAction(id));
+            alert("An error occured. Try again");
+          });
+        }
+      }
+
       function handleDeleteToDo(todo) {
         return dispatch => {
           dispatch(removetoDoAction(todo.id));
@@ -98,14 +131,14 @@
         };
       }
 
-      function handleDeleteGoal(goal){
+      function handleDeleteGoal(goal) {
         return dispatch => {
           dispatch(removeGoalAction(goal.id));
           return API.deleteGoal(goal.id).catch(() => {
             dispatch(addGoalAction(goal));
             alert("An error occured. Try again.");
           });
-        }
+        };
       }
 
       function loading(state = true, action) {
@@ -211,14 +244,9 @@
       class ToDos extends React.Component {
         addItem = e => {
           e.preventDefault();
-          return API.saveTodo(this.input.value)
-            .then(todo => {
-              this.props.store.dispatch(addToDoAction(todo));
-              this.input.value = "";
-            })
-            .catch(() => {
-              alert("There was an error. Try again.");
-            });
+          this.props.store.dispatch(
+            handleSaveToDo(this.input.value, () => this.input.value = "")
+          );
         };
 
         removeItem = todo => {
@@ -226,11 +254,7 @@
         };
 
         toggleItem = id => {
-          this.props.store.dispatch(toggleToDoAction(id));
-          return API.saveTodoToggle(id).catch(() => {
-            this.props.store.dispatch(toggleToDoAction(id));
-            alert("An error occured. Try again");
-          });
+          this.props.store.dispatch(handleToggleToDoItem(id))
         };
 
         render() {
@@ -262,7 +286,7 @@
         };
 
         removeItem = goal => {
-          this.props.store.dispatch(handleDeleteGoal(goal))
+          this.props.store.dispatch(handleDeleteGoal(goal));
         };
 
         render() {
@@ -284,11 +308,8 @@
       class App extends React.Component {
         componentDidMount() {
           const { store } = this.props;
-          Promise.all([API.fetchTodos(), API.fetchGoals()]).then(
-            ([todos, goals]) => {
-              store.dispatch(receiveDataAction(todos, goals));
-            }
-          );
+
+          store.dispatch(handleInitialData())
           store.subscribe(() => this.forceUpdate());
         }
         render() {
